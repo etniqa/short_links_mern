@@ -1,4 +1,4 @@
-import {useState, useCallback} from "react";
+import {useState, useCallback, useEffect} from "react";
 
 export const useHttp = () => {
     const [loading, setLoading] = useState(false);
@@ -19,23 +19,30 @@ export const useHttp = () => {
                 method, body, headers
             });
             // parse response
-            const data = await response.json();
+            let data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.message || "Something goes wrong on server (error in http.hook (front.end))");
+                throw ({...data, status: 'bad'});
+            } else {
+                data = {...data, status: 'good'};
             }
 
             setLoading(false);
+
             return data;
+
         } catch (e) {
+            console.log("http.hook: exception in useHttp:", e);
             setLoading(false);
-            setError(e.message);
-            console.log("http.hook: error after setError: ", error);
+            // doesn't work
+            // setError(e.message);
             throw e;
         }
     });
 
+    // no need, cause setError doesn't work
     const clearError = useCallback(() => setError(null), []);
+    // const clearError = useEffect(() => setError(null), []);
 
-    return {loading, request, errors: error, clearError};
+    return {loading, request, errors: error, clearError, setError};
 };

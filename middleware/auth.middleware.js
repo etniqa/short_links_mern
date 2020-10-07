@@ -11,7 +11,6 @@ module.exports = (req, res, next) => {
             return next;
         }
 
-
         console.log(`before token extraction`);
         const token = req.headers.authorization   // special field in header for TOKEN. View: BEARERER <TOKEN>
             .split(' ')[1];
@@ -25,8 +24,6 @@ module.exports = (req, res, next) => {
         // decode token
         console.log("before decoding token");
         req.user = jwt.verify(token, mycfg.jwtSecret);
-        console.log("after decoding token");
-        console.log("/");
 
         // continue performing (the same as return next;)
         next();

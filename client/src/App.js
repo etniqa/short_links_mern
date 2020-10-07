@@ -1,15 +1,19 @@
 import React from 'react';
 import 'materialize-css'
-import {BrowserRouter as Router} from "react-router-dom";
+import {BrowserRouter as Router, Route} from "react-router-dom";
 import {useRoutes} from "./routes";
 import {useAuth} from "./hooks/auth.hook";
 import {AuthContext} from "./context/AuthContext";
 import {Navbar} from "./components/Navbar";
+import {CreatePage} from "./pages/CreatePage";
 
 function App() {
     const {login, logout, token, userId} = useAuth();
     const isAuthenticated = !!token;
+    // control routes
+    // const routes = useRoutes(isAuthenticated);
     const routes = useRoutes(isAuthenticated);
+
     return (
         <AuthContext.Provider value={{
             // here we assign global vars

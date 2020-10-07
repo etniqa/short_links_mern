@@ -1,12 +1,15 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useHttp} from "../hooks/http.hook";
-import {useMessage} from "../hooks/message.hook";
 import {AuthContext} from "../context/AuthContext";
-import Redirect from "react-router-dom/es/Redirect";
+
+import './authPage.css'
+import {useMessage} from "../hooks/message.hook";
 
 export const AuthPage = () => {
     const auth = useContext(AuthContext);
-    const {loading, request, error, clearError} = useHttp();    // get loading, request, error vars from useHttp() (communicate with server)
+    const message = useMessage();
+    const [respFromBackend, setRespFromBackend] = useState(null);
+    const {loading, request} = useHttp();    // get loading, request, error vars from useHttp() (communicate with server)
     // this hook is using for looking after to error (we made it for showing mistakes)
     // truly don`t know how to work this code
     // there is a HOOK (don`t know for what is using), BUT
@@ -15,19 +18,22 @@ export const AuthPage = () => {
         email: '', password: ''
     });
 
-    const message = useMessage();
-
     // don't know for what this meth
     useEffect(() => {
         window.M.updateTextFields();
     });
 
+/*    const message = useMessage();
     useEffect(() => {
-        // console.log("Error in AuthPage: ", error);
         // TODO: why doesnt show error using window.M.toast
         message(error);
         // clearError();
     }, [error, message]);
+    useEffect(() => setError("try to set error"));*/
+
+    useEffect(() => {
+        console.log("AuthPage, useEffect: error: ", respFromBackend);
+    }, [respFromBackend]);
 
     const changeHandler = (event) => {
         // there is name of field in event.target.name and in event.target.value - value of field
@@ -37,9 +43,10 @@ export const AuthPage = () => {
     const registerHandler = async () => {
         try {
             const data = await request('/api/auth/register', 'POST', {...form});
-
+            setRespFromBackend(data);
         } catch (e) {
-            // console.log("catch error in AuthPage: ", e.message);
+            console.log("AuthPage, registerHandler: caught exception", e);
+            setRespFromBackend(e);
         }
     };
 
@@ -47,12 +54,46 @@ export const AuthPage = () => {
         try {
             const data = await request('/api/auth/login', 'POST', {...form});
             auth.login(data.token, data.userId);
-            // redirect doesn`t work (
-            return <Redirect to='/create' />
         } catch (e) {
-            // console.log("catch error in AuthPage: ", e.message);
+            console.log("AuthPage, loginHandler: caught exception", e);
+            setRespFromBackend(e);
         }
     };
+
+    const showResp = (resp) => {
+        if (resp.status === 'bad') {
+            const errors = respFromBackend.messages.map(er => er.msg)
+            return (
+                <div
+                    className="error-message message-resp"
+                    style={{width: "100%"}}
+                >
+                    {errors.map(er => (
+                        <div>
+                            <span className="resp-text">{er}</span>
+                            <br/>
+                        </div>
+                    ))}
+                </div>
+            );
+        } else {
+            console.log()
+            const successMsgs = respFromBackend.messages.map(mes => mes.msg)
+            return (
+                <div
+                    className="success-message message-resp"
+                    style={{width: "100%"}}
+                >
+                    {successMsgs.map(msg => (
+                        <div>
+                            <span className="resp-text">{msg}</span>
+                            <br/>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+    }
 
     return (
         <div className="row">
@@ -99,8 +140,9 @@ export const AuthPage = () => {
                         >Registration
                         </button>
                     </div>
+                    {!!respFromBackend && showResp(respFromBackend)}
                 </div>
             </div>
         </div>
-    )
+    );
 };

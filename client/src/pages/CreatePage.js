@@ -16,24 +16,32 @@ export const CreatePage = () => {
     });
 
     const pressHandler = async (event) => {
+        console.log("pressed: ", event.key);
         if (event.key === 'Enter') {
-            try {
-                const data = await request('/api/link/generate', 'POST', {from: link}, {
-                    authorization: "Bearer " + authContext.token
-                });
-                console.log("data from /link/generate on front: ", data);
-                history.push(`/detail/${data.link._id}`);
-
-            } catch (e) {
-                console.log("Error in CreatePage.js (front): ", e.message);
-            }
+            await createLink();
         }
     };
+
+    const createLink = async () => {
+        try {
+            console.log("token: ", authContext.token);
+            const data = await request('/api/link/generate', 'POST', {from: link}, {
+                authorization: "Bearer " + authContext.token
+            });
+            console.log("data from /link/generate on front: ", data);
+            history.push(`/detail/${data.link._id}`);
+
+        } catch (e) {
+            console.log("Error in CreatePage.js (front): ", e.message);
+        }
+    }
+
+
 
     return (
         <div className="row">
             <h1>Create</h1>
-            <div className="col s8 offset-s2" style={{paddingTop: '2rem'}}>
+            <div className="col s9 offset-s2" style={{paddingTop: '2rem'}}>
                 <div className="input-field">
                     <input
                         placeholder="input link"
@@ -44,6 +52,11 @@ export const CreatePage = () => {
                         onKeyPress={pressHandler}
                     />
                     <label htmlFor="link">Enter link</label>
+                    <button className="btn yellow darken-4"
+                        onClick={createLink}
+                    >
+                        Create
+                    </button>
                 </div>
 
             </div>
