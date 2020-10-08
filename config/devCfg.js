@@ -1,4 +1,4 @@
-var config = {};
+let config = {};
 
 config.port = 5000;
 config.jwtSecret = "I`m your lost agnets";

@@ -2,7 +2,7 @@
 const {Router} = require('express');
 const Link = require('../models/Link.js');
 const shortId = require('shortid');
-const mycfg = require('../config/mycfg');
+const mycfg = require('../config/devCfg');
 const auth = require('../middleware/auth.middleware');
 
 const router = Router();
