@@ -2,7 +2,7 @@
 const {Router} = require('express');
 const Link = require('../models/Link.js');
 const shortId = require('shortid');
-const mycfg = require('../config/devCfg');
+const mycfg = (process.env.NODE_ENV === "production" ? require('../config/prodCfg') : require('../config/devCfg'))
 const auth = require('../middleware/auth.middleware');
 
 const router = Router();
