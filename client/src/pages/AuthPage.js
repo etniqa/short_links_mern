@@ -101,7 +101,7 @@ export const AuthPage = () => {
                 <h1>Make shorter your link</h1>
                 <div className="card blue darken-1">
                     <div className="card-content white-text">
-                        <span className="card-title">Card Title</span>
+                        <span className="card-title">Sign in | Sign up</span>
                         <div>
                             <div className="input-field">
                                 <input
